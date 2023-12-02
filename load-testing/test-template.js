@@ -57,6 +57,7 @@ export function uc1(data) {
     const url = __ENV.SERVICE_URL;
     const headers = {
         'Authorization': `Bearer ${data.access_token}`,
+        'Content-Type': 'application/json',
         'version': '1.0.0'
     };
 
