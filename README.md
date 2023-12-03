@@ -28,11 +28,13 @@ Instructions on how to clone, build, and run the project locally.
 
 ## REST API Endpoint
 
-Example REST controller with basic CRUD operations and input validation.
+- Sample CRUD implementations for [items](https://github.com/Pulin412/tech-scaffoldings/tree/main/src/main/java/com/tech/scaffolding/techscaffoldings/microservices/items)
+- [Custom](https://github.com/Pulin412/tech-scaffoldings/blob/main/src/main/java/com/tech/scaffolding/techscaffoldings/microservices/custom/CustomRestController.java) Rest endpoint added for general implementations like [Load Testing](#load-testing)
 
 ## Database Setup
 
-Details on connecting to a database and performing basic CRUD operations.
+- Postgres DB implemented in [local](https://github.com/Pulin412/tech-scaffoldings/tree/main/environments/local) environment.
+- [Properties](https://github.com/Pulin412/tech-scaffoldings/blob/main/src/main/resources/application-local.properties) used from the local docker image setup
 
 ## Security Configuration
 
