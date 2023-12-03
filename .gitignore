@@ -34,3 +34,4 @@ build/
 
 .DS_Store
 .env
+environments/local/db-data
