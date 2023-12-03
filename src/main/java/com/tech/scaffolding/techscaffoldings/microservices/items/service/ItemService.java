@@ -1,10 +1,11 @@
 package com.tech.scaffolding.techscaffoldings.microservices.items.service;
 
-import com.tech.scaffolding.techscaffoldings.microservices.items.model.Item;
+import com.tech.scaffolding.techscaffoldings.microservices.items.entity.Item;
 import com.tech.scaffolding.techscaffoldings.microservices.items.repository.ItemRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ItemService {
@@ -19,7 +20,7 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public Item getItemById(Long id) {
+    public Optional<Item> getItemById(Long id) {
         return itemRepository.findById(id);
     }
 
