@@ -34,7 +34,7 @@ Integration with Spring Boot Actuator and exporting metrics to Prometheus.
 Load testing script using K6:
 
 ```shell
-cd load-testing
+cd k6-load-testing/scripts
 k6 run -e K6_ENV=local -e LOCAL_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiJ9 -e SERVICE_URL=http://localhost:8080/load-test test-template.js
 ```
 
