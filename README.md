@@ -31,7 +31,14 @@ Integration with Spring Boot Actuator and exporting metrics to Prometheus.
 
 ## Load Testing
 
-Load testing script using K6:
+Start the application:
+
+```shell
+cd k6-load-testing
+mvn spring-boot:run
+```
+
+Run the test script : 
 
 ```shell
 cd k6-load-testing/scripts
