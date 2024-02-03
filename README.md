@@ -6,39 +6,12 @@ Ready to use code templates in Java.
 
 ## Table of Contents
 
-1. [Getting Started](#getting-started)
-2. [Database Setup](#database-setup)
-3. [REST API Endpoint](#rest-api-endpoint)
-4. [Security Configuration](#security-configuration)
-5. [Asynchronous Processing](#asynchronous-processing)
-6. [Caching](#caching)
-7. [Exception Handling](#exception-handling)
-8. [Logging Setup](#logging-setup)
-9. [Testing](#testing)
-10. [Swagger Documentation](#swagger-documentation)
-11. [Continuous Integration](#continuous-integration)
-12. [Monitoring and Metrics](#monitoring-and-metrics)
-13. [Dockerization](#dockerization)
-14. [Load Testing](#load-testing)
-15. [Dashboarding](#dashboarding)
-
-## Getting Started
-
-Instructions on how to clone, build, and run the project locally.
-
-## REST API Endpoint
-
-- Sample CRUD implementations for [items](https://github.com/Pulin412/tech-scaffoldings/tree/main/src/main/java/com/tech/scaffolding/techscaffoldings/microservices/items)
-- [Custom](https://github.com/Pulin412/tech-scaffoldings/blob/main/src/main/java/com/tech/scaffolding/techscaffoldings/microservices/custom/CustomRestController.java) Rest endpoint added for general implementations like [Load Testing](#load-testing)
-
-## Database Setup
-
-- Postgres DB implemented in [local](https://github.com/Pulin412/tech-scaffoldings/tree/main/environments/local) environment.
-- [Properties](https://github.com/Pulin412/tech-scaffoldings/blob/main/src/main/resources/application-local.properties) used from the local docker image setup
-
-## Security Configuration
-
-Instructions on securing the Spring Boot application, including JWT token authentication.
+1. [Asynchronous Processing](#asynchronous-processing)
+2. [Caching](#caching)
+3. [Testing](#testing)
+4. [Monitoring and Metrics](#monitoring-and-metrics)
+5. [Load Testing](#load-testing)
+6. [Dashboarding](#dashboarding)
 
 ## Asynchronous Processing
 
@@ -48,33 +21,13 @@ Example of using Spring's @Async for asynchronous processing and integration wit
 
 Integration with Spring Cache for caching and an example of caching a method result.
 
-## Exception Handling
-
-Global exception handling setup and custom exception classes.
-
-## Logging Setup
-
-Configuration for logging using SLF4J and Logback, with different log levels.
-
 ## Testing
 
 Unit testing template with JUnit and Mockito, and integration testing setup.
 
-## Swagger Documentation
-
-Integration with Swagger for API documentation.
-
-## Continuous Integration
-
-Configuration for a CI/CD pipeline (e.g., Jenkins, Travis CI) and a sample pipeline script.
-
 ## Monitoring and Metrics
 
 Integration with Spring Boot Actuator and exporting metrics to Prometheus.
-
-## Dockerization
-
-Dockerfile for containerization and Docker Compose for multi-container setups.
 
 ## Load Testing
 
