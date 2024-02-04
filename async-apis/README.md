@@ -129,3 +129,155 @@
 
 
 ## Spring WebFlux
+
+- The term, `reactive`, refers to programming models that are built around reacting to change — network components reacting to I/O events, UI controllers reacting to mouse events, and others. In that sense, non-blocking is reactive, because, instead of being blocked, we are now in the mode of reacting to notifications as operations complete or data becomes available.
+- `Reactor` is the reactive library of choice for Spring `WebFlux`. It provides the `Mono` and `Flux` API types to work on data sequences of 0..1 (Mono) and 0..N (Flux) through a rich set of operators aligned with the ReactiveX vocabulary of operators.
+- As a general rule, a WebFlux API accepts a plain `Publisher` as input, adapts it to a Reactor type internally, uses that, and returns either a `Flux` or a `Mono` as output.
+
+<details>
+<summary> 
+:point_right: Reactive Publisher/Subscriber Interfaces
+</summary>
+
+- To build a `Flow`, we can use three main abstractions and compose them into asynchronous processing logic.
+- Every `Flow` needs to process events that are published to it by a `Publisher` instance; the Publisher has one method – `subscribe()`.
+- The receiver of messages needs to implement the `Subscriber` interface. This has four methods that need to be overridden – `onSubscribe(), onNext(), onError(), onComplete()`.
+- If we want to transform incoming message and pass it further to the next `Subscriber`, we need to implement the `Processor` interface.
+- Publisher/Subscriber Implementation : 
+
+  - The onSubscribe() method is called before processing starts
+      ```java
+      public class EndSubscriber<T> implements Subscriber<T> {
+          private Subscription subscription;
+          public List<T> consumedElements = new LinkedList<>();
+  
+          @Override
+          public void onSubscribe(Subscription subscription) {
+              this.subscription = subscription;
+              subscription.request(1);
+          }
+      }
+      ```
+    
+  - onNext() – this is called whenever the Publisher publishes a new message:
+     ```java 
+     @Override
+     public void onNext(T item) {
+      System.out.println("Got : " + item);
+      consumedElements.add(item);
+      subscription.request(1);
+     }
+    ```
+  > When we started the subscription in the `onSubscribe()` method and when we processed a message we need to call the `request()` method on the Subscription to signal that the current Subscriber is ready to consume more messages.
+
+  - onError() – which is called whenever some exception will be thrown in the processing, as well as onComplete() – called when the Publisher is closed:
+    ```java 
+      @Override
+      public void onError(Throwable t) {
+       t.printStackTrace();
+      }
+  
+      @Override
+      public void onComplete() {
+       System.out.println("Done");
+      }
+    ```
+
+  - Test the Producer flow : 
+  ```java 
+  @Test
+  public void whenSubscribeToIt_thenShouldConsumeAll()
+  throws InterruptedException {
+
+    // given
+    SubmissionPublisher<String> publisher = new SubmissionPublisher<>();
+    EndSubscriber<String> subscriber = new EndSubscriber<>();
+    publisher.subscribe(subscriber);
+    List<String> items = List.of("1", "x", "2", "x", "3", "x");
+
+    // when
+    assertThat(publisher.getNumberOfSubscribers()).isEqualTo(1);
+    items.forEach(publisher::submit);
+    publisher.close();
+
+    // then
+     await().atMost(1000, TimeUnit.MILLISECONDS)
+       .until(
+         () -> assertThat(subscriber.consumedElements)
+         .containsExactlyElementsOf(items)
+     );
+  }
+  ```
+  > `SubmissionPublisher` class – a construct from the `java.util.concurrent` – which implements the `Publisher` interface.
+  
+  > We’re calling the `close()` method on the instance of the `Publisher`. It will invoke `onComplete()` callback underneath on every `Subscriber` of the given `Publisher`.  
+
+</details>
+
+<details>
+<summary> 
+:point_right: Mono
+</summary>
+
+- `Mono` is a special type of `Publisher`. 
+- A Mono object represents a single or empty value. This means it can emit only one value at most for the `onNext()` request and then terminates with the `onComplete()` signal. In case of failure, it only emits a single `onError()` signal.
+
+- Example : 
+  ```java 
+  @Test
+  public void givenMonoPublisher_whenSubscribeThenReturnSingleValue() {
+      Mono<String> helloMono = Mono.just("Hello");
+      StepVerifier.create(helloMono)
+        .expectNext("Hello")
+        .expectComplete()
+        .verify();
+  }
+  ```
+- When `helloMono` is subscribed, it emits only one value and then sends the signal of completion.
+
+</details>
+
+<details>
+<summary> 
+:point_right: Flux
+</summary>
+
+- `Flux` is a standard `Publisher` that represents 0 to N asynchronous sequence values. 
+- This means that it can emit 0 to many values, possibly infinite values for `onNext()` requests, and then terminates with either a completion or an error signal.
+
+- Example: 
+  ```java 
+  @Test
+  public void givenFluxPublisher_whenSubscribedThenReturnMultipleValues() {
+      Flux<String> stringFlux = Flux.just("Hello", "Baeldung");
+      StepVerifier.create(stringFlux)
+        .expectNext("Hello")
+        .expectNext("Baeldung")
+        .expectComplete()
+        .verify();
+  }
+  ```
+
+</details>
+
+> `Mono` and `Flux` are both implementations of the `Publisher` interface. In simple terms, we can say that when we’re doing something like a computation or making a request to a database or an external service, and expecting a maximum of one result, then we should use `Mono`. 
+
+> When we’re expecting multiple results from our computation, database, or external service call, then we should use `Flux`.
+
+> `Mono` is more relatable to the `Optional` class in Java since it contains 0 or 1 value, and `Flux` is more relatable to `List` since it can have N number of values.
+
+- `WebClient` is used to make the API calls and same is explored in the AppRunner class.
+ 
+
+## Final Comparisons
+
+- `CompletableFuture` with `RestTemplate`: 
+  - This approach is more traditional and is suitable for applications that are not fully reactive. 
+  - `RestTemplate` is a blocking HTTP client, and while `@Async` and `CompletableFuture` introduce asynchrony, the underlying operation still blocks the thread during the HTTP call. 
+  - This method can be more straightforward to integrate into applications that are already using Spring's @Async support but don't require a fully non-blocking stack.
+
+
+- `Mono` with `WebClient`: 
+  - This approach is fully reactive and non-blocking, making it the better choice for reactive applications. 
+  - `WebClient` is designed to work within the Spring WebFlux framework, which supports reactive streams. 
+  - This method allows for more efficient resource utilization, especially under high load, by avoiding thread blocking during I/O operations.

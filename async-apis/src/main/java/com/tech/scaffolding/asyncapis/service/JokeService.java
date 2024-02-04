@@ -6,7 +6,10 @@ import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,8 +19,11 @@ public class JokeService {
 
     private final RestTemplate restTemplate;
 
-    public JokeService(RestTemplateBuilder restTemplateBuilder) {
+    private final WebClient webClient;
+
+    public JokeService(RestTemplateBuilder restTemplateBuilder, WebClient.Builder webClientBuilder) {
         this.restTemplate = restTemplateBuilder.build();
+        this.webClient = webClientBuilder.baseUrl("https://icanhazdadjoke.com/").build();
     }
 
     @Async
@@ -31,5 +37,17 @@ public class JokeService {
         Thread.sleep(3000L);
         return CompletableFuture.completedFuture(
                 restTemplate.exchange("https://icanhazdadjoke.com/", HttpMethod.GET, requestEntity, String.class, Collections.EMPTY_MAP));
+    }
+
+    public Mono<ResponseEntity<String>> getRandomJoke_Flux() {
+        return webClient.get()
+                .headers(headers -> {
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+                })
+                .retrieve()
+                .toEntity(String.class)
+                .delaySubscription(Duration.ofMillis(3000L))
+                .doOnSubscribe(subscription -> log.info("Fetching a joke....current thread - {}", Thread.currentThread().getName()));
     }
 }
