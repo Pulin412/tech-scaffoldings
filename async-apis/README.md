@@ -109,7 +109,23 @@
 - When the client initiates a request, it goes through all matched filters in the filter chain until it arrives at the `DispatcherServlet` instance. 
 - Then, the servlet takes care of the async dispatching of the request. It marks the request as started by calling `AsyncWebRequest#startAsync`, transfers the request handling to an instance of `WebAsyncManager`, and finishes its job without committing the response. The filter chain also is traversed in the reverse direction to the root. 
 - `WebAsyncManager` submits the request processing job in its associated `ExecutorService`. Whenever the result is ready, it notifies `DispatcherServlet` for returning the response to the client.
-- Demo
+- Demo :
+
+  - [AppRunner.java](https://github.com/Pulin412/tech-scaffoldings/blob/main/async-apis/src/main/java/com/tech/scaffolding/asyncapis/AppRunner.java) is added to call the service asynchronously multiple times.
+  - [taskExecutor](https://github.com/Pulin412/tech-scaffoldings/blob/main/async-apis/src/main/java/com/tech/scaffolding/asyncapis/AsyncApisApplication.java#L20) bean is added to have the custom Executor to limit the number of concurrent threads to two and limit the size of the queue to 500.
+  - Output -
+  
+     ```shell
+     2024-02-04T19:37:34.112+01:00  INFO 9492 --- [           main] c.tech.scaffolding.asyncapis.AppRunner   : Sending Requests at - 2024-02-04T19:37:34.112305
+     2024-02-04T19:37:34.115+01:00  INFO 9492 --- [    AsyncTest-2] c.t.s.asyncapis.service.JokeService      : Fetching a joke....current thread - AsyncTest-2
+     2024-02-04T19:37:34.115+01:00  INFO 9492 --- [    AsyncTest-1] c.t.s.asyncapis.service.JokeService      : Fetching a joke....current thread - AsyncTest-1
+     2024-02-04T19:37:37.488+01:00  INFO 9492 --- [    AsyncTest-1] c.t.s.asyncapis.service.JokeService      : Fetching a joke....current thread - AsyncTest-1
+     2024-02-04T19:37:40.623+01:00  INFO 9492 --- [           main] c.tech.scaffolding.asyncapis.AppRunner   : Elapsed time: 6510
+     2024-02-04T19:37:40.629+01:00  INFO 9492 --- [           main] c.tech.scaffolding.asyncapis.AppRunner   : --> <200 OK OK,{"id":"AI6hiGtzAd","joke":"Where do bees go to the bathroom?  The BP station.","status":200}
+     ```
+  
+  - Note that the first two calls happen in separate threads (AsyncTest-2, AsyncTest-1) and the third one is parked until one of the two threads became available. To compare how long this takes without the asynchronous feature, try commenting out the `@Async` annotation and runing the service again. The total elapsed time should increase noticeably, because each query takes at least a second. 
+  - You can also tune the `Executor` to increase the `corePoolSize` attribute for instance.
 
 
 ## Spring WebFlux
