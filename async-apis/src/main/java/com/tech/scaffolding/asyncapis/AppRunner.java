@@ -43,6 +43,9 @@ public class AppRunner implements CommandLineRunner {
         log.info("--> " + response2.get());
         log.info("--> " + response3.get());
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------------------------------------//
+
         // Test the WebFlux implementation
         long startFlux = System.currentTimeMillis();
         log.info("Sending Web Flux Requests at - {}", LocalDateTime.now());
@@ -63,6 +66,23 @@ public class AppRunner implements CommandLineRunner {
         Flux.merge(monoResponse1, monoResponse2, monoResponse3)
                 .doOnNext(response -> log.info("--> {}", response.getBody()))
                 .doOnComplete(() -> log.info("Elapsed time for WebFlux requests: {} ms", System.currentTimeMillis() - startFlux))
+                .blockLast(Duration.ofMinutes(1)); // Block until all requests are completed with a timeout
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------------------------------------//
+
+        // Flux method calls -
+        long startFluxMethod = System.currentTimeMillis();
+        log.info("Sending Flux method Requests at - {}", LocalDateTime.now());
+
+        Flux<String> fluxResponse1 = jokeService.getRandomJokes_Flux(5);
+        Flux<String> fluxResponse2 = jokeService.getRandomJokes_Flux(5);
+        Flux<String> fluxResponse3 = jokeService.getRandomJokes_Flux(5);
+
+        Flux.merge(fluxResponse1, fluxResponse2, fluxResponse3)
+                .doOnNext(response -> log.info("--> {}", response))
+                .doOnComplete(() -> log.info("Elapsed time for Flux method requests: {} ms", System.currentTimeMillis() - startFluxMethod))
+                .onErrorResume(e -> Flux.empty()) // Continue processing even if there's an error
                 .blockLast(Duration.ofMinutes(1)); // Block until all requests are completed with a timeout
     }
 }
