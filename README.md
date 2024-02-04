@@ -15,7 +15,9 @@ Ready to use code templates in Java.
 
 ## Asynchronous Processing
 
-Example of using Spring's @Async for asynchronous processing and integration with a message queue.
+[async-api](https://github.com/Pulin412/tech-scaffoldings/blob/main/async-apis/README.md)
+
+Multiple ways to do async API calls and comparisons.
 
 ## Caching
 
