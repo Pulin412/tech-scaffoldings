@@ -106,6 +106,10 @@
 
 </details>
 
-- 
+- When the client initiates a request, it goes through all matched filters in the filter chain until it arrives at the `DispatcherServlet` instance. 
+- Then, the servlet takes care of the async dispatching of the request. It marks the request as started by calling `AsyncWebRequest#startAsync`, transfers the request handling to an instance of `WebAsyncManager`, and finishes its job without committing the response. The filter chain also is traversed in the reverse direction to the root. 
+- `WebAsyncManager` submits the request processing job in its associated `ExecutorService`. Whenever the result is ready, it notifies `DispatcherServlet` for returning the response to the client.
+- Demo
+
 
 ## Spring WebFlux
