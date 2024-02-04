@@ -4,11 +4,12 @@
 
 - Introduced in Spring 3.0
 - Runs heavy load jobs on a separate threads.
- 
+- Return type should one of - `Future`, `CompletableFuture`, `ListenableFuture`
+
 <details>
 
 <summary> 
-:robot: Return type should one of - `Future`, `CompletableFuture`, `ListenableFuture` 
+:point_right: Read further
 </summary>
 
 **Future**:
